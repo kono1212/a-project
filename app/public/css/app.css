@@ -3829,6 +3829,13 @@ input[type=button].btn-block {
   align-items: center;
 }
 
+/* 売り切れ商品をグレーアウトするためのスタイル */
+.sold-out {
+  opacity: 0.5; /* 透明度を下げてグレーアウトにする */
+  pointer-events: none; /* クリックイベントを無効にする */
+}
+
+
 .input-group > .custom-file:not(:last-child) .custom-file-label,
 .input-group > .custom-file:not(:last-child) .custom-file-label::after {
   border-top-right-radius: 0;

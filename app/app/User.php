@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'image', 'profile', 'role', 'del_fig', 'reset_token'
     ];
 
     /**
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'reset_token',
     ];
 
     /**
@@ -36,4 +36,55 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function posts() {
+        return $this->hasMany('App\Post', 'user_id', 'id');
+    }
+
+    public function follows() {
+        return $this->hasMany('App\Follow', 'user_id', 'id');
+    }
+    
+    public function likes() {
+        return $this->hasMany('App\Like', 'user_id', 'id');
+    }
+    
+    public function buys() {
+        return $this->hasMany('App\Buy', 'user_id', 'id');
+    }
+
+
+    public function isFollowing(User $user)
+    {
+        return (bool) $this->following()->where('follow_id', $user->id)->first();
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'user_id', 'follow_id');
+    }
+
+    public function isFollowedBy(User $user)
+    {
+        return (bool) $this->followers()->where('user_id', $user->id)->first();
+    }
+    
+
+public function followers()
+{
+    return $this->belongsToMany(User::class, 'follows', 'follow_id', 'user_id');
+}
+
+
+    public function follow(User $user)
+    {
+        return $this->following()->attach($user->id);
+    }
+
+    public function unfollow(User $user)
+    {
+        return $this->following()->detach($user->id);
+    }
+
+    
 }
