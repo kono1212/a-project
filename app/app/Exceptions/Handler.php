@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -50,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // 例外がModelNotFoundExceptionの場合は、404エラーページを表示
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->view('errors.404', [], 404);
+        }
+
+        // その他のエラーの場合は、500エラーページを表示
         return parent::render($request, $exception);
     }
 }

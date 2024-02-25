@@ -64,7 +64,7 @@
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                    {{ __('内容確認') }}
+                                    {{ __('新規登録') }}
                                 </button>
                             </div>
                         </div>

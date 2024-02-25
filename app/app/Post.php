@@ -20,7 +20,8 @@ class Post extends Model
     }
 
     public function buys() {
-        return $this->hasMany('App\Buy', 'post_id', 'id');
+    return $this->hasMany('App\Buy', 'post_id', 'id');
     }
+
 }
 

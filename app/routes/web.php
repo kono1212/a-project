@@ -13,20 +13,23 @@
 use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\ProductController;
 
-
-
-
-
+Auth::routes();
 Route::resource('products', ProductController::class)->except([
-    'index', 'store' // ホームページでの商品表示と出品処理は別途処理されるため、除外する
+    'index', 'store'
 ]);
 
+Route::get('/users', [DisplayController::class, 'userList'])->name('user.list');
+Route::get('/posts', [DisplayController::class, 'postList'])->name('post.list');
 
-
-Auth::routes();
 Route::get('/', [DisplayController::class, 'index'])->name('home'); // ホームページの表示
 
 Route::get('/search', [DisplayController::class, 'search'])->name('search');
+
+Route::get('/ownerpage', 'DisplayController@ownerpage')->name('ownerpage');
+Route::delete('/users/delete/{id}', 'DisplayController@usersDelete')->name('users.delete');
+
+Route::put('/posts/{id}', 'DisplayController@update')->name('posts.update');
+
 
 Route::get('post/{id}', [ProductController::class, 'show'])->name('post.detail');
 Route::get('my-post/{id}', [ProductController::class, 'myshow'])->name('my.post');
@@ -34,8 +37,9 @@ Route::get('my-post/{id}', [ProductController::class, 'myshow'])->name('my.post'
 Route::get('/user/{id}', [DisplayController::class, 'userPage'])->name('user.page');
 
 Route::put('/post/{id}', [ProductController::class, 'update'])->name('post.update');
-Route::delete('/post/{id}', [ProductController::class, 'destroy'])->name('post.delete');
+Route::delete('/post/{id}', [ProductController::class, 'delete'])->name('post.delete');
 
+Route::delete('/posts/{id}', 'ProductController@destroy')->name('posts.destroy');
 
 Route::post('/purchase/{post}', [ProductController::class, 'purchaseDetail'])->name('purchase.detail');
 
@@ -44,7 +48,6 @@ Route::post('/confirm/{post}', [ProductController::class, 'purchaseConfirm'])->n
 Route::post('/complete', [ProductController::class, 'purchaseComplete'])->name('purchase.complete');
 
 Route::post('/users/{user}', [DisplayController::class, 'userUpdate'])->name('user.update');
-
 
 Route::get('/post', [ProductController::class, 'create'])->name('post.create'); // 商品出品ページの表示
 Route::post('/post', [ProductController::class, 'store'])->name('post.store'); // 商品の出品処理

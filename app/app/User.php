@@ -37,22 +37,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function posts() {
+    public function posts()
+    {
         return $this->hasMany('App\Post', 'user_id', 'id');
     }
 
-    public function follows() {
+    public function follows()
+    {
         return $this->hasMany('App\Follow', 'user_id', 'id');
     }
-    
-    public function likes() {
+
+    public function likes()
+    {
         return $this->hasMany('App\Like', 'user_id', 'id');
     }
-    
-    public function buys() {
+
+    public function buys()
+    {
         return $this->hasMany('App\Buy', 'user_id', 'id');
     }
-
 
     public function isFollowing(User $user)
     {
@@ -68,13 +71,11 @@ class User extends Authenticatable
     {
         return (bool) $this->followers()->where('user_id', $user->id)->first();
     }
-    
 
-public function followers()
-{
-    return $this->belongsToMany(User::class, 'follows', 'follow_id', 'user_id');
-}
-
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follow_id', 'user_id');
+    }
 
     public function follow(User $user)
     {
@@ -85,6 +86,4 @@ public function followers()
     {
         return $this->following()->detach($user->id);
     }
-
-    
 }

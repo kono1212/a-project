@@ -7,6 +7,7 @@
     <div class="row">
         <div class="col-md-6">
             <h2>{{ $post->title }}</h2>
+            <p>売買状況: {{ $post->status_flg === 0 ? '販売中' : '売り切れ' }}</p>
             <form action="{{ route('post.update', $post->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -27,14 +28,22 @@
                     <input type="text" class="form-control" id="condition" name="condition" value="{{ $post->condition }}">
                 </div>
                 <!-- 更新ボタン -->
-                <button type="submit" class="btn btn-primary">更新する</button>
+                @if ($post->status_flg === 0)
+                    <button type="submit" class="btn btn-primary">更新する</button>
+                @else
+                    <button type="submit" class="btn btn-primary" disabled>更新する</button>
+                @endif
             </form>
             <!-- 削除ボタン -->
-            <form action="{{ route('post.delete', $post->id) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger mt-2">削除する</button>
-            </form>
+            @if ($post->status_flg === 0)
+                <form action="{{ route('post.delete', $post->id) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger mt-2">削除する</button>
+                </form>
+            @else
+                <button class="btn btn-danger mt-2" disabled>削除する</button>
+            @endif
         </div>
         <div class="col-md-6">
             <img src="{{ asset('images/' . $post->image) }}" alt="商品画像" class="img-thumbnail">

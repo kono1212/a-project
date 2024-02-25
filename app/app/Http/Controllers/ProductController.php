@@ -114,7 +114,7 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete($id)
     {
         $post = Post::findOrFail($id);
         $post->delete();
@@ -122,57 +122,46 @@ class ProductController extends Controller
     }
 
     public function purchaseDetail(Post $post)
-{
-    // 購入処理を実行するコードをここに記述する
-
-    // 購入者情報を登録するページにリダイレクト
+    {
     return view('buy', compact('post'));
-}
+    }
 
+    public function purchaseConfirm(Request $request, Post $post)
+    {
+        $name = $request->input('name');
+        $tel = $request->input('tel'); // 修正
+        $post_code = $request->input('post_code'); // 修正
+        $address = $request->input('address');
+       return view('buy_conf', compact('post', 'name', 'tel', 'post_code', 'address'));
+    }
 
+    public function purchaseComplete(Request $request)
+    {
+        $data = $request->only(['name', 'tel', 'post_code', 'address', 'post_id']);
+        $userId = auth()->id();
 
-public function purchaseConfirm(Request $request, Post $post)
+        $buy = new Buy();
+        $buy->user_id = $userId;
+        $buy->post_id = $data['post_id'];
+        $buy->name = $data['name'];
+        $buy->tel = $data['tel'];
+        $buy->post_code = $data['post_code'];
+        $buy->address = $data['address'];
+        $buy->save();
 
-{    
-    
-    $name = $request->input('name');
-    $tel = $request->input('tel'); // 修正
-    $post_code = $request->input('post_code'); // 修正
-    $address = $request->input('address');
-    return view('buy_conf', compact('post', 'name', 'tel', 'post_code', 'address'));
-}
+        $post = Post::findOrFail($data['post_id']);
+        $post->status_flg = 1;
+        $post->save();
 
+        return view('buy_comp');
+    }
 
-public function purchaseComplete(Request $request)
-{
-    // フォームから送られてきた購入情報を取得
-    $data = $request->only(['name', 'tel', 'post_code', 'address', 'post_id']);
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
 
-    // ログインユーザーのIDを取得するか、適切なユーザーIDを設定します。
-    $userId = auth()->id(); // もしくは、適切なユーザーIDを設定
-
-    // 購入情報をデータベースに登録
-    $buy = new Buy();
-    $buy->user_id = $userId;
-    $buy->post_id = $data['post_id'];
-    $buy->name = $data['name'];
-    $buy->tel = $data['tel'];
-    $buy->post_code = $data['post_code'];
-    $buy->address = $data['address'];
-    $buy->save();
-
-    // 対応する投稿のstatus_flgを更新する
-    $post = Post::findOrFail($data['post_id']);
-    $post->status_flg = 1;
-    $post->save();
-
-    // データ登録後は、適切なページにリダイレクトする
-    return view('buy_comp');
-}
-
-
-
-
-
+        return redirect()->route('post.list')->with('success', '投稿が削除されました');
+    }
 
 }

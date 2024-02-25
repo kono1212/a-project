@@ -34,17 +34,14 @@
                     <!-- 購入完了ボタン -->
                     <div class="row">
                         <div class="col-md-6">
-                                <form method="POST" action="{{ route('purchase.complete') }}">
-    @csrf
-    <input type="hidden" name="name" value="{{ $name }}">
-    <input type="hidden" name="tel" value="{{ $tel }}">
-    <input type="hidden" name="post_code" value="{{ $post_code }}">
-    <input type="hidden" name="address" value="{{ $address }}">
-
-    <input type="hidden" name="post_id" value="{{ $post->id }}">
-
-    <button type="submit" class="btn btn-primary">購入完了</button>
-
+                            <form method="POST" action="{{ route('purchase.complete') }}">
+                                @csrf
+                                <input type="hidden" name="name" value="{{ $name }}">
+                                <input type="hidden" name="tel" value="{{ $tel }}">
+                                <input type="hidden" name="post_code" value="{{ $post_code }}">
+                                <input type="hidden" name="address" value="{{ $address }}">
+                                <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                <button type="submit" class="btn btn-primary">購入完了</button>
                             </form>
                         </div>
                     </div>

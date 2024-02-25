@@ -9,13 +9,15 @@ use App\Buy;
 use App\Follow;
 use App\Like;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class DisplayController extends Controller
 {
     public function index()
     {
-        // ポストテーブルの全データを取得
-        $posts = Post::paginate(15);
+        $posts = Post::where('del_flag', 0) // 非表示でない商品のみを取得
+        ->orderByDesc('created_at') // 更新日時の新しい順に並び替え
+        ->paginate(15);
 
         if (!Auth::check()) {
             // ログインしていない場合の処理
@@ -26,7 +28,6 @@ class DisplayController extends Controller
         return view('home', compact('posts'));
     }
 
-    // コントローラーのメソッド内での検索処理の例
     public function search(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -35,44 +36,38 @@ class DisplayController extends Controller
         // 商品モデルを適切に取得するクエリを組み立てる
         $query = Post::query();
     
-        // キーワードでの検索
+            // キーワードでの検索
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%$keyword%")
-                  ->orWhere('explain', 'like', "%$keyword%");
+            $q->where('title', 'like', "%$keyword%")
+              ->orWhere('explain', 'like', "%$keyword%");
             });
         }
     
         // 価格範囲での絞り込み
-        // 価格範囲での絞り込み
-if ($priceRange) {
-    if ($priceRange === '5000-') {
-        $minPrice = 5000;
-        $query->where('amount', '>=', $minPrice);
-    } else {
-        $priceArray = explode('-', $priceRange);
-        if (count($priceArray) == 2) {
-            $minPrice = (int)$priceArray[0];
-            $maxPrice = (int)$priceArray[1];
-            if ($maxPrice === 1000) {
-                $query->where('amount', '<=', $maxPrice);
+        if ($priceRange) {
+            if ($priceRange === '5000-') {
+                $minPrice = 5000;
+                $query->where('amount', '>=', $minPrice);
             } else {
-                $query->whereBetween('amount', [$minPrice, $maxPrice]);
+                $priceArray = explode('-', $priceRange);
+                if (count($priceArray) == 2) {
+                    $minPrice = (int)$priceArray[0];
+                    $maxPrice = (int)$priceArray[1];
+                    if ($maxPrice === 1000) {
+                        $query->where('amount', '<=', $maxPrice);
+                    } else {
+                        $query->whereBetween('amount', [$minPrice, $maxPrice]);
+                    }
+                }
             }
         }
-    }
-}
-
     
         // 検索結果を取得
         $posts = $query->paginate(15);
     
-        // 検索結果をビューに渡して表示
         return view('home', compact('posts'));
     }
-    
-
-    
 
     public function PostDetail()
     {
@@ -87,32 +82,19 @@ if ($priceRange) {
         // ビューにユーザー情報を渡してマイページを表示
         return view('mypage', compact('user'));
     }
-    
 
-    // アカウント情報の編集
-public function editAccount()
-{
+    public function editAccount()
+    {
         $user = Auth::user();
-        // 取得したユーザー情報をビューに渡す
         return view('user_edit', compact('user'));
-        
-}
-
-
-
-    // 売上履歴の表示
-    public function salesHistory()
-    {
-        // 売上履歴の表示などの処理を実装
     }
 
-    // 購入履歴の表示
-    public function purchaseHistory()
+    public function ownerpage()
     {
-        // 購入履歴の表示などの処理を実装
+        $user = Auth::user();
+        return view('ownerpage', compact('user'));
     }
 
-    // フォロー一覧の表示
     public function followList()
     {
         // ログイン中のユーザーがフォローしているユーザーを取得
@@ -125,27 +107,10 @@ public function editAccount()
         return view('follow', compact('followings'));
     }
 
-
-
-    // いいね一覧の表示
-    public function likeList()
-    {
-        $userLikes = Like::where('user_id', auth()->id())->get();
-        return view('like', compact('userLikes'));
-    }
-
-    // 出品一覧の表示
-    public function listing()
-    {
-        // 出品一覧の表示などの処理を実装
-    }
-
     public function top()
     {
         return view('top');
     }
-
-    
 
     public function userUpdate(Request $request, User $user)
     {
@@ -163,72 +128,55 @@ public function editAccount()
             $image = $request->file('image');
     
             // 画像を保存して、パスをデータベースに保存する処理
-
-$path = $image->store('public/images');
+            $path = $image->store('public/images');
     
             // publicディレクトリに移動
             $publicPath = str_replace('public/', 'storage/', $path);
             $user->image = $publicPath;
-
-
-
         }
     
         // ユーザーモデルを保存
         $user->save();
-    
-        // リダイレクト
+
         return redirect()->route('mypage');
     }
-    
-    
 
-    
+    public function deleteConfirm($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user_delete_conf', compact('user'));
+    }
 
-
-
-public function deleteConfirm($id)
-{
-    // ユーザー情報を取得して確認ページに渡す
-    $user = User::findOrFail($id);
-    return view('user_delete_conf', compact('user'));
-}
-
-public function delete(Request $request, $id)
-{
-    // ユーザーを取得
-    $user = User::findOrFail($id);
-        $user->del_flag = true; // del_fig カラムを true に設定
+    public function delete(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->del_flag = true;
         $user->save();
 
         Auth::logout();
 
         return redirect('/')->with('success', 'アカウントを削除しました');
+    }
 
-}
+    public function sell()
+    {
+        // ログインユーザーが出品した商品の一覧を取得し、ページネーションを適用
+        $posts = Post::where('user_id', auth()->id())
+                     ->where('del_flag', 0) // 非表示でない商品のみを取得
+                     ->orderByDesc('created_at') // 登録日時の新しい順に並び替え
+                     ->paginate(10);
+    
+        return view('sell', compact('posts'));
+    }
+    
 
+    public function buyHistory()
+    {
+        // ログイン中のユーザーが購入した商品の一覧を取得
+        $purchasedItems = Buy::where('user_id', auth()->id())->get();
 
-public function sell()
-{
-    // ログインユーザーが出品した商品の一覧を取得し、ページネーションを適用
-    $posts = Post::where('user_id', auth()->id())->paginate(15);
-
-    // sell.blade.phpビューを返す
-    return view('sell', compact('posts'));
-}
-
-
-
-
-public function buyHistory()
-{
-    // ログイン中のユーザーが購入した商品の一覧を取得
-    $purchasedItems = Buy::where('user_id', auth()->id())->get();
-
-    // sell_history.blade.phpビューを返す
-    return view('buy_history', compact('purchasedItems'));
-}
-
+        return view('buy_history', compact('purchasedItems'));
+    }
 
     public function sellHistory()
     {
@@ -239,17 +187,20 @@ public function buyHistory()
 
         return view('sell_history', compact('soldItems'));
     }
-    
+
     public function userPage($id)
     {
-        // ユーザー情報と関連する出品商品を取得
+        // ユーザー情報を取得
         $user = User::findOrFail($id);
-        $posts = $user->posts()->paginate(10);
-
-        // ユーザーページのビューを表示
+        
+        // ユーザーに関連する出品商品を取得し、非表示の商品を除外して並び替える
+        $posts = $user->posts()
+                      ->where('del_flag', 0)
+                      ->orderByDesc('created_at')
+                      ->paginate(10);
+    
         return view('user_page', compact('user', 'posts'));
     }
-    
 
     public function toggleFollow($id)
     {
@@ -262,6 +213,37 @@ public function buyHistory()
         }
         
         return back();
+    }
+
+    public function userList()
+    {
+        $users = User::paginate(10);
+        return view('user_list', ['users' => $users]);
+    }
+
+    public function postList()
+    {
+        $posts = Post::paginate(10); // ページネーションを使用して投稿を取得
+        return view('post_list', ['posts' => $posts]);
+    }
+
+    public function usersDelete($id)
+    {
+        $user = User::findOrFail($id);
+        $user->del_flag = 1; // ユーザーを論理削除
+        $user->save();
+        
+        return redirect()->route('user.list')->with('success', 'ユーザーが正常に削除されました');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+
+        $post->del_flag = 1;
+        $post->save();
+
+        return redirect()->back()->with('success', '投稿を非表示にしました');
     }
 
 }
