@@ -26,8 +26,9 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             // ログイン成功時の処理
-            $user = Auth::user();
-            if ($user->del_flag == 1) {
+                $user = Auth::user();
+                if ($user->del_flag == 1) {
+                auth()->logout();
                 return view('suspended_user');
             } elseif ($user->role === 0) {
                 return view('ownerpage');
