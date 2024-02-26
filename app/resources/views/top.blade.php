@@ -20,7 +20,7 @@
                                         <!-- 商品タイトルの表示 -->
                                         <h5 class="card-title">{{ $post->title }}</h5>
                                         <!-- 価格の表示 -->
-                                        <p class="card-text">{{ $post->amount }}円</p>
+                                        <p class="card-text">¥{{ $post->amount }}</p>
                                         <!-- その他の商品情報を表示することもできます -->
                                     </div>
                                 </div>

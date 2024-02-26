@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center mb-4">ユーザーリスト</h1>
+        <h3 class="text-center mb-4">ユーザーリスト</h3>
         <a href="{{ route('ownerpage') }}" class="btn btn-primary mb-3">戻る</a>
         <table class="table table-striped">
             <thead>
@@ -26,7 +26,6 @@
                     <th>ユーザー名</th>
                     <th>メールアドレス</th>
                     <th>ユーザー区分</th>
-                    <th>削除区分</th>
                     <th></th>
                 </tr>
             </thead>
@@ -37,16 +36,15 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->role === 0 ? '管理者' : '一般' }}</td>
-                    <td>{{ $user->del_flag ? '削除済み' : '未削除' }}</td>
                     <td>
                         @if(!$user->del_flag)
                             <form id="delete-form-{{ $user->id }}" action="{{ route('users.delete', $user->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に削除しますか？')">論理削除</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に利用停止しますか？')">利用停止にする</button>
                             </form>
                         @else
-                            <span class="text-muted">削除済み</span>
+                            <span class="text-muted">利用停止</span>
                         @endif
                     </td>
                 </tr>

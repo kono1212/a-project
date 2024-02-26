@@ -26,9 +26,10 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}" style="font-size: 34px;">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
+            <a class="navbar-brand" href="{{ url('/') }}" style="font-size: 38px; color: red;">
+                Flea Market <i class="fas fa-shopping-cart"></i>
+            </a>
+
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -52,15 +53,7 @@
                             @endif
                         @else
                             <li class="nav-item">
-                                <span class="nav-link">ようこそ、{{ Auth::user()->name }}さん</span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
+                                <span class="nav-link">{{ Auth::user()->name }}さま</span>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('post.create') }}">
@@ -69,8 +62,16 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('mypage') }}">
-                                    <i class="fas fa-home fa-lg"></i>
+                                <i class="fas fa-user fa-lg"></i>
                                 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
                             </li>
                         @endguest
                     </ul>

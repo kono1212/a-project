@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="container">
-        <h1>売上履歴</h1>
+        <h4 style="margin-top: 30px;">売上履歴</h4>
         
-        <div class="row">
+        <div class="row" style="margin-top: 30px;">
             @foreach ($soldItems as $item)
                 <div class="col-md-3 mb-3"> <!-- col-md-3 に変更してカードのサイズを小さくする -->
                     <div class="card">

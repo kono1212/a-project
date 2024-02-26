@@ -9,7 +9,7 @@
 
                 <div class="card-body">
                     <p>ご注文が完了しました。</p>
-                    <a href="{{ route('home') }}" class="btn btn-primary">HOMEへ戻る</a>
+                    <a href="{{ route('home') }}" class="btn btn-primary">ホームへ戻る</a>
                 </div>
             </div>
         </div>

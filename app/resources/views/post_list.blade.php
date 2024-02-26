@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center mb-4">投稿リスト</h1>
+        <h3 class="text-center mb-4">投稿リスト</h3>
         <a href="{{ route('ownerpage') }}" class="btn btn-primary mb-3">戻る</a>
         <table class="table table-striped">
             <thead>
@@ -28,7 +28,7 @@
                     <th scope="col">商品画像</th>
                     <th scope="col">価格</th>
                     <th scope="col">売買状況</th>
-                    <th scope="col">非表示フラグ</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>

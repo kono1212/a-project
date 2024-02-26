@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="container">
-    <h1>購入履歴</h1>
+    <h4 style="margin-top: 30px;">購入履歴</h4>
     
-    <div class="row">
+    <div class="row" style="margin-top: 30px;">
         @isset($purchasedItems)
             @foreach ($purchasedItems as $item)
                 <div class="col-md-3 mb-3">

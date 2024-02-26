@@ -2,20 +2,24 @@
 
 @section('content')
     <div class="container">
-        <h1>フォロー一覧</h1>
+        <h4 style="margin-top: 30px;">フォロー一覧</h4>
         
-        <div class="row">
+        <div class="row" style="margin-top: 30px;">
             <div class="col-md-8 offset-md-2">
                 <ul class="list-group">
                     @foreach ($followings as $following)
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <img src="{{ asset('/' . $following->image) }}" alt="ユーザーアイコン" class="img-thumbnail">
+                                    @if($following->image)
+                                    <img src="{{ asset('/' . $following->image) }}" alt="User Avatar" class="rounded-circle" style="width: 60px; height: 60px;">
+                                    @else
+                                    <img src="{{ asset('/default.jpg') }}" alt="Default Avatar" class="rounded-circle" style="width: 60px; height: 60px;">
+                                    @endif
                                 </div>
                                 <div class="col-md-8">
-                                    {{ $following->name }}
-                                    <a href="{{ route('user.page', ['id' => $following->id]) }}" class="btn btn-primary btn-sm float-right">ユーザー詳細</a>
+                                    <span style="font-size: 18px;">{{ $following->name }}</span>
+                                    <a href="{{ route('user.page', ['id' => $following->id]) }}" class="btn btn-primary btn-sm float-right">詳細</a>
                                 </div>
                             </div>
                         </li>

@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="container">
-        <h1>出品一覧</h1>
+        <h4 style="margin-top: 30px;">出品一覧</h4>
         
-        <div class="row">
+        <div class="row" style="margin-top: 30px;">
             @isset($posts)
                 @foreach ($posts as $post)
                     {{-- del_flagが0の場合のみ表示 --}}

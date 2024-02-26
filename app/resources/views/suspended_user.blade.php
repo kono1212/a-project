@@ -19,7 +19,7 @@
     <div class="container text-center">
         <div class="card">
             <div class="card-body">
-                <h1 class="card-title">利用停止</h1>
+                <h3 class="card-title">利用停止</h3>
                 <p class="card-text">あなたのアカウントは利用停止されています。</p>
                 <button id="logout-btn" class="btn btn-primary">TOPに戻る</button>
             </div>

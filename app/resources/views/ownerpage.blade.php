@@ -24,7 +24,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center mb-4">管理者ページ</h1>
+        <h3 class="text-center mb-4">管理者ページ</h3>
         <nav class="navbar navbar-expand-md navbar-light">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -38,24 +38,16 @@
             </ul>
         </nav>
         <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">ユーザーリスト</h5>
-                        <p class="card-text">ユーザーのリストを表示します。</p>
-                        <a href="{{ route('user.list') }}" class="btn btn-primary">ユーザーリストへ</a>
-                    </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <a href="{{ route('user.list') }}" class="btn btn-primary">ユーザーリストへ</a>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{{ route('post.list') }}" class="btn btn-primary">出品リストへ</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">出品リスト</h5>
-                        <p class="card-text">出品されたアイテムのリストを表示します。</p>
-                        <a href="{{ route('post.list') }}" class="btn btn-primary">出品リストへ</a>
-                    </div>
-                </div>
-            </div>
+        </div>
         </div>
     </div>
 </body>

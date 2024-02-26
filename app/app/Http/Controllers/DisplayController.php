@@ -16,7 +16,7 @@ class DisplayController extends Controller
     public function index()
     {
         $posts = Post::where('del_flag', 0) // 非表示でない商品のみを取得
-        ->orderByDesc('created_at') // 更新日時の新しい順に並び替え
+        ->orderByDesc('created_at') // 登録日時の新しい順に並び替え
         ->paginate(15);
 
         if (!Auth::check()) {
@@ -64,8 +64,8 @@ class DisplayController extends Controller
         }
     
         // 検索結果を取得
-        $posts = $query->paginate(15);
-    
+        $posts = $query->where('del_flag', 0)->orderByDesc('created_at')->paginate(15);
+
         return view('home', compact('posts'));
     }
 

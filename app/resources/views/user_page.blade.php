@@ -39,28 +39,31 @@
     <div class="row">
         <div class="col-md-3">
             <!-- ユーザーアイコン -->
+            @if($user->image)
             <img src="{{ asset('/' . $user->image) }}" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px;">
-            <h2>{{ $user->name }}</h2>
+            @else
+            <img src="{{ asset('/default.jpg') }}" alt="" class="rounded-circle" style="width: 100px; height: 100px;">
+            @endif
+            <h2 style="margin-top: 5px;">{{ $user->name }}</h2>
 
             <!-- フォローボタン -->
             @if (Auth::check() && Auth::id() != $user->id)
                 <form action="{{ route('follow.toggle', $user->id) }}" method="POST">
                     @csrf
                     <button class="follow-toggle btn btn-primary" data-user-id="{{ $user->id }}">
-                        {{ $user->isFollowedBy(Auth::user()) ? 'フォロー解除' : 'フォローする' }}
+                        {{ $user->isFollowedBy(Auth::user()) ? 'フォロー解除' : 'フォロー' }}
                     </button>
                 </form>
             @endif
 
             <div class="mt-3">
-                <h5>自己紹介</h5>
                 <p>{{ $user->profile }}</p>
             </div>
         </div>
-        <div class="col-md-9">
-            <h1>{{ $user->name }} の出品商品一覧</h1>
+        <div class="col-md-9" >
+            <h5 style="margin-top: 20px;">{{ $user->name }} が出品した商品</h5>
             <!-- 出品商品一覧 -->
-            <div class="row">
+            <div class="row" style="margin-top: 30px;">
                 @isset($posts)
                     @foreach ($posts as $post)
                         @if ($post->del_flag == 0) <!-- 非表示フラグが0の場合のみ表示 -->
@@ -72,7 +75,7 @@
                                     </a>
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $post->title }}</h5>
-                                        <p class="card-text">{{ $post->amount }}円</p>
+                                        <p class="card-text">¥{{ $post->amount }}</p>
                                     </div>
                                 </div>
                             </div>
