@@ -32,42 +32,35 @@ class DisplayController extends Controller
     {
         $keyword = $request->input('keyword');
         $priceRange = $request->input('price');
-    
+        $priceMax = $request->input('price_max');
+        
         // 商品モデルを適切に取得するクエリを組み立てる
         $query = Post::query();
     
-            // キーワードでの検索
+        // キーワードでの検索
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
-            $q->where('title', 'like', "%$keyword%")
-              ->orWhere('explain', 'like', "%$keyword%");
+                $q->where('title', 'like', "%$keyword%")
+                  ->orWhere('explain', 'like', "%$keyword%");
             });
         }
-    
+
         // 価格範囲での絞り込み
-        if ($priceRange) {
-            if ($priceRange === '5000-') {
-                $minPrice = 5000;
-                $query->where('amount', '>=', $minPrice);
-            } else {
-                $priceArray = explode('-', $priceRange);
-                if (count($priceArray) == 2) {
-                    $minPrice = (int)$priceArray[0];
-                    $maxPrice = (int)$priceArray[1];
-                    if ($maxPrice === 1000) {
-                        $query->where('amount', '<=', $maxPrice);
-                    } else {
-                        $query->whereBetween('amount', [$minPrice, $maxPrice]);
-                    }
-                }
-            }
+        if ($priceRange && $priceMax) { // 両方の価格が提供された場合のみ絞り込みを行う
+            $query->whereBetween('amount', [(int)$priceRange, (int)$priceMax]);
+        } elseif ($priceMax) { // 価格範囲の最大値のみ提供された場合は、最大値以下の価格で絞り込みを行う
+            $query->where('amount', '<=', (int)$priceMax);
+        } elseif ($priceRange) { // 価格範囲の最小値のみ提供された場合は、最小値以上の価格で絞り込みを行う
+            $query->where('amount', '>=', (int)$priceRange);
         }
-    
+
         // 検索結果を取得
         $posts = $query->where('del_flag', 0)->orderByDesc('created_at')->paginate(15);
-
+    
         return view('home', compact('posts'));
     }
+    
+    
 
     public function PostDetail()
     {
@@ -184,10 +177,18 @@ class DisplayController extends Controller
         $soldItems = Post::where('user_id', auth()->id())
                          ->where('status_flg', 1) // 売り切れ
                          ->get();
-
-        return view('sell_history', compact('soldItems'));
+    
+        // 売り切れ商品の合計金額を初期化
+        $totalSales = 0;
+    
+        // 各売り切れ商品の金額を合計する
+        foreach ($soldItems as $item) {
+            $totalSales += $item->amount;
+        }
+    
+        return view('sell_history', compact('soldItems', 'totalSales'));
     }
-
+    
     public function userPage($id)
     {
         // ユーザー情報を取得
@@ -208,12 +209,18 @@ class DisplayController extends Controller
         
         if (auth()->user()->isFollowing($userToFollow)) {
             auth()->user()->unfollow($userToFollow);
+            \Log::info('Unfollowed');
         } else {
             auth()->user()->follow($userToFollow);
+            \Log::info('Followed');
         }
         
-        return back();
+        $data = auth()->user()->isFollowing($userToFollow);
+        
+        return response()->json($data);
     }
+    
+    
 
     public function userList()
     {

@@ -24,7 +24,10 @@
         <!-- ユーザー名入力のテキストボックス -->
         <div class="mb-3" style="margin-top: 30px;">
             <label for="name" class="form-label">ユーザー名</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ $user->name }}">
+            <input type="text" class="form-control" id="name" name="name" value="{{ $user->name }}" required>
+            @error('name')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
         </div>
         
         <!-- 自己紹介入力のテキストボックス -->
@@ -36,7 +39,10 @@
         <!-- メールアドレス入力のテキストボックス -->
         <div class="mb-3" style="margin-top: 30px;">
             <label for="email" class="form-label">メールアドレス</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}">
+            <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" required>
+            @error('email')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
         </div>
 
         <input type="hidden" name="user_id" value="{{ $user->id }}">

@@ -1,37 +1,3 @@
-<script type="text/javascript">
-    $(document).ready(function () {
-        // フォローボタンのクリックイベントを監視
-        $('.follow-toggle').click(function (e) {
-            e.preventDefault(); // デフォルトのイベントをキャンセル
-
-            // フォローボタンがクリックされたユーザーのIDを取得
-            var userId = $(this).data('user-id');
-
-            // Ajaxリクエストを送信
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('follow.toggle', ['id' => $user->id]) }}',
-                data: {
-                    user_id: userId,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (data) {
-                    // 成功時の処理
-                    if (data.success) {
-                        // ボタンのテキストを切り替える
-                        $(this).text(data.following ? 'フォロー解除' : 'フォローする');
-                    } else {
-                        alert('エラーが発生しました');
-                    }
-                }.bind(this), // コールバック内のthisをクリックされたボタンに束縛する
-                error: function () {
-                    alert('サーバーエラーが発生しました');
-                }
-            });
-        });
-    });
-</script>
-
 @extends('layouts.app')
 
 @section('content')
@@ -46,15 +12,13 @@
             @endif
             <h2 style="margin-top: 5px;">{{ $user->name }}</h2>
 
-            <!-- フォローボタン -->
-            @if (Auth::check() && Auth::id() != $user->id)
-                <form action="{{ route('follow.toggle', $user->id) }}" method="POST">
-                    @csrf
-                    <button class="follow-toggle btn btn-primary" data-user-id="{{ $user->id }}">
-                        {{ $user->isFollowedBy(Auth::user()) ? 'フォロー解除' : 'フォロー' }}
-                    </button>
-                </form>
-            @endif
+        <!-- フォローボタン -->
+        @if (Auth::check() && Auth::id() != $user->id)
+            <button class="follow-toggle btn btn-primary" data-user-id="{{ $user->id }}">
+                {{ $user->isFollowedBy(Auth::user()) ? 'フォロー解除' : 'フォロー' }}
+            </button>
+        @endif
+
 
             <div class="mt-3">
                 <p>{{ $user->profile }}</p>
@@ -93,3 +57,54 @@
     </div>
 </div>
 @endsection
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // フォローボタンのクリックイベントを監視
+        $('.follow-toggle').click(function (e) {
+            e.preventDefault(); // デフォルトのイベントをキャンセル
+
+            // クリックされたボタンの要素を保存
+            var $this = $(this);
+            
+            // フォローボタンがクリックされたユーザーのIDを取得
+            var userId = $this.data('user-id');
+
+            // ルート名を定義
+            var routeUrl = "{{ route('follow.toggle', ['id' => ':userId']) }}";
+            routeUrl = routeUrl.replace(':userId', userId);
+
+            // CSRFトークンを取得
+            var csrfToken = '{{ csrf_token() }}';
+
+            // Ajaxリクエストを送信
+            $.ajax({
+                type: 'POST',
+                url: routeUrl,
+                data: {
+                    user_id: userId,
+                    _token: csrfToken
+                },
+            })
+            .done(function (data) {
+                // 成功時の処理
+                // ボタンのテキストを切り替える
+                if (data) {
+                    $this.text('フォロー解除');
+                } else {
+                    $this.text('フォロー');
+                }
+            })
+            .fail(function () {
+                // 失敗時の処理
+                alert('エラーが発生しました');
+            });
+        });
+    });
+</script>
+
+
+
+
+

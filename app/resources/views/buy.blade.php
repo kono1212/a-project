@@ -29,6 +29,9 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">氏名</label>
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control" name="name" required autofocus>
+                                @error('name')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
@@ -36,6 +39,9 @@
                             <label for="tel" class="col-md-4 col-form-label text-md-right">電話番号</label>
                             <div class="col-md-6">
                                 <input id="tel" type="text" class="form-control" name="tel" required>
+                                @error('tel')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
@@ -43,6 +49,9 @@
                             <label for="post_code" class="col-md-4 col-form-label text-md-right">郵便番号</label>
                             <div class="col-md-6">
                                 <input id="post_code" type="text" class="form-control" name="post_code" required>
+                                @error('post_code')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
@@ -50,6 +59,9 @@
                             <label for="address" class="col-md-4 col-form-label text-md-right">住所</label>
                             <div class="col-md-6">
                                 <input id="address" type="text" class="form-control" name="address" required>
+                                @error('address')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 

@@ -104,9 +104,36 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-        $post->update($request->all());
-        return redirect()->route('home')->with('success', '商品が更新されました');
+    
+        // バリデーションルールを定義する
+        $request->validate([
+            'title' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // 画像がアップロードされている場合のみ検証
+            'amount' => 'required',
+            'explain' => 'required',
+            'condition' => 'required',
+        ]);
+    
+        // 画像のアップロード処理
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+            $post->image = $imageName;
+        }
+    
+        // その他の商品情報を更新
+        $post->title = $request->title;
+        $post->amount = $request->amount;
+        $post->explain = $request->explain;
+        $post->condition = $request->condition;
+        $post->save();
+    
+        return redirect()->route('my.post', ['id' => $post->id])->with('success', '商品が更新されました');
+
     }
+    
+
 
     /**
      * Remove the specified resource from storage.
